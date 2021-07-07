@@ -43,6 +43,7 @@ public class JwtAuthenticationController {
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
 
+	// 과제 1
 	@RequestMapping(value = "/login/{access_token}", method=RequestMethod.GET)
 	public String getAccessToken(@PathVariable String access_token) throws Exception {
 		URL url = new URL("https://kapi.kakao.com/v2/user/me");
@@ -71,8 +72,12 @@ public class JwtAuthenticationController {
 	}
 
 	@RequestMapping(value="/login/{access_token}", method=RequestMethod.POST)
-	public ResponseEntity<?> postAccessToken(@RequestBody UserDTO user, @PathVariable String access_token) throws Exception {
+	public ResponseEntity<?> postAccessToken(@RequestBody UserDTO user
+	//, @PathVariable String access_token
+	) throws Exception {
+
 		return ResponseEntity.ok(userDetailsService.save(user));
+		//return ResponseEntity.ok(userDetailsService.saveWithAccessToken(user, access_token));
 	}
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
@@ -84,7 +89,6 @@ public class JwtAuthenticationController {
 				.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
-
 		return ResponseEntity.ok(new JwtResponse(token));
 	}
 
@@ -97,4 +101,6 @@ public class JwtAuthenticationController {
 			throw new Exception("INVALID_CREDENTIALS", e);
 		}
 	}
+
+
 }

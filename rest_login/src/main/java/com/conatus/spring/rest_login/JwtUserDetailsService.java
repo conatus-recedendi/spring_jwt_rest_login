@@ -16,14 +16,14 @@ import org.springframework.stereotype.Service;
 public class JwtUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	private UserDAO userDAO;
+	private UserRepository userRepo;
 
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserEntityClass user = userDAO.findByUsername(username);
+		UserDAO user = userRepo.findByUsername(username);
 		if (user != null) {
 			return new User(user.getUsername(), user.getPassword(),
 					new ArrayList<>());
@@ -32,12 +32,21 @@ public class JwtUserDetailsService implements UserDetailsService {
 		}
 	}
 
+	//no used
 	public UserDAO save(UserDTO user) {
-		UserEntityClass newUser = new UserEntityClass();
+		UserDAO newUser = new UserDAO();
 		newUser.setUsername(user.getUsername());
 		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
 		//newUser.setToken(user.getToken());
 		//newUser.setAccessToken(user.getAccessToken());
-		return userDAO.save(newUser);
+		return userRepo.save(newUser);
+	}
+	
+	public UserDAO saveWithAccessToken(UserDTO user, String accessToken) {
+		UserDAO newUser = new UserDAO();
+		newUser.setUsername(user.getUsername());
+		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+		//newUser.setAccessToken(accessToken);
+		return userRepo.save(newUser);
 	}
 }
